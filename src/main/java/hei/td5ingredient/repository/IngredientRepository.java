@@ -1,5 +1,6 @@
 package hei.td5ingredient.repository;
 
+import hei.td5ingredient.Enum.CategoryEnum;
 import hei.td5ingredient.entity.Ingredient;
 import org.springframework.stereotype.Repository;
 
@@ -26,7 +27,7 @@ public class IngredientRepository {
 
             while (rs.next()) {
                 ingredients.add(new Ingredient(
-                        rs.getString("id"),
+                        rs.getInt("id"),
                         rs.getString("name"),
                         rs.getString("category"),
                         rs.getDouble("price")
@@ -38,25 +39,24 @@ public class IngredientRepository {
         return ingredients;
     }
 
-    public Ingredient findById(String id) {
+    public Ingredient findById(int id) {
         String sql = "SELECT * FROM ingredient WHERE id = ?";
+        Ingredient ingredient =null;
         try (Connection conn = dataSource.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, id);
+            pstmt.setInt(1, id);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    return new Ingredient(
-                            rs.getString("id"),
-                            rs.getString("name"),
-                            rs.getString("category"),
-                            rs.getDouble("price")
-                    );
+                    ingredient.setId( rs.getInt("id"));
+                    ingredient.setName(  rs.getString("name"));
+                    ingredient.setPrice(rs.getDouble("price"));
+                    ingredient.setCategory(CategoryEnum.valueOf(rs.getString("category")));
                 }
+                return ingredient;
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return null;
     }
 }

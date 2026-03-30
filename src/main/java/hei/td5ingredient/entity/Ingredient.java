@@ -1,5 +1,6 @@
 package hei.td5ingredient.entity;
 
+import jdk.jfr.Category;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,8 +13,8 @@ import lombok.ToString;
 @Setter
 @ToString
 public class Ingredient {
-    private String id;
+    private int id;
     private String name;
-    private String category;
+    private Category category;
     private double price;
 }
