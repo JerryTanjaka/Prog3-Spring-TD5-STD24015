@@ -49,6 +49,7 @@ public class IngredientRepository {
             pstmt.setInt(1, id);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
+                    ingredient =new Ingredient();
                     ingredient.setId( rs.getInt("id"));
                     ingredient.setName(  rs.getString("name"));
                     ingredient.setPrice(rs.getDouble("price"));
