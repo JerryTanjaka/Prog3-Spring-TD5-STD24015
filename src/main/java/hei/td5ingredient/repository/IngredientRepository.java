@@ -19,6 +19,7 @@ public class IngredientRepository {
 
     public List<Ingredient> findAll() {
         List<Ingredient> ingredients = new ArrayList<>();
+        Ingredient ingredient = null;
         String sql = "SELECT * FROM ingredient";
 
         try (Connection conn = dataSource.getConnection();
@@ -26,12 +27,12 @@ public class IngredientRepository {
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                ingredients.add(new Ingredient(
-                        rs.getInt("id"),
-                        rs.getString("name"),
-                        rs.getString("category"),
-                        rs.getDouble("price")
-                ));
+                ingredient = new Ingredient();
+                ingredient.setId(rs.getInt("id"));
+                ingredient.setName(rs.getString("name"));
+                ingredient.setPrice(rs.getDouble("price"));
+                ingredient.setCategory(CategoryEnum.valueOf(rs.getString("category")));
+                ingredients.add(ingredient);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
