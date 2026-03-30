@@ -3,9 +3,11 @@ package hei.td5ingredient.controller;
 
 import hei.td5ingredient.entity.Ingredient;
 import hei.td5ingredient.service.IngredientService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -25,5 +27,18 @@ public class IngredientController {
     @GetMapping("/{id}")
     public Ingredient getIngredientById(@PathVariable int id) {
         return ingredientService.getIngredientById(id);
+    }
+
+
+    @GetMapping("/{id}/stock")
+    public ResponseEntity<?> getStock(@PathVariable int id, @RequestParam(required = false) String at,
+                                      @RequestParam(required = false) String unit) {
+        if (at == null || unit == null) {
+            return ResponseEntity.status(400).body("Either mandatory query parameter `at` or `unit` is not provided.");
+        }
+        if (ingredientService.getIngredientById(id) == null) {
+            return ResponseEntity.status(404).body("Ingredient.id=" + id + " is not found");
+        }
+        return ResponseEntity.ok("Valeur du stock ici");
     }
 }
