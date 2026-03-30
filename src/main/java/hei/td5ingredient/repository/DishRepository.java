@@ -1,7 +1,5 @@
 package hei.td5ingredient.repository;
 
-
-
 import hei.td5ingredient.Enum.CategoryEnum;
 import hei.td5ingredient.Enum.DishTypeEnum;
 import hei.td5ingredient.Enum.UnitEnum;
@@ -33,14 +31,17 @@ public class DishRepository {
         try (Connection conn = dataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
-        Dish dish = new Dish();
+
+            Dish dish = new Dish();
             while (rs.next()) {
-            dish.setId(rs.getInt("id"));
-            dish.setName(rs.getString("name"));
-            dish.setUnitPrice(rs.getObject("selling_price") == null ? null : rs.getDouble("selling_price"));
-            dish.setDishTypeEnum(DishTypeEnum.valueOf(rs.getString("dish_type")));
-            }
+                dish.setName(rs.getString("name"));
+                dish.setId(rs.getInt("id"));
+                dish.setSellingPrice(rs.getObject("selling_price") == null ? null : rs.getDouble("selling_price"));
+                dish.setDishType(DishTypeEnum.valueOf(rs.getString("dish_type")));
+                dish.setDishIngredients(getIngredientsByDishId(dish.getId()));
                 dishes.add(dish);
+            }
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -58,14 +59,13 @@ public class DishRepository {
             try (ResultSet rs = ps.executeQuery()) {
                 Dish dish = new Dish();
                 if (rs.next()) {
-                dish.setDishTypeEnum(DishTypeEnum.valueOf(rs.getString("dish_type")));
-                dish.setId(rs.getInt("id"));
-                dish.setName(rs.getString("name"));
-                dish.setUnitPrice(rs.getObject("selling_price") == null ? null : rs.getDouble("selling_price"));
-                dish.setIngredients(getIngredientsByDishId(id));
+                    dish.setId(rs.getInt("id"));
+                    dish.setDishIngredients(getIngredientsByDishId(id));
+                    dish.setName(rs.getString("name"));
+                    dish.setSellingPrice(rs.getObject("selling_price") == null ? null : rs.getDouble("selling_price"),);
+                    dish.setDishType(DishTypeEnum.valueOf(rs.getString("dish_type")));
                 }
                 return dish;
-                return null;
             }
 
         } catch (SQLException e) {
@@ -87,31 +87,29 @@ public class DishRepository {
 
             ps.setInt(1, dishId);
             try (ResultSet rs = ps.executeQuery()) {
+                Ingredient ingredient = new Ingredient();
+                DishIngredient dishIngredient = new DishIngredient();
                 while (rs.next()) {
-                    Ingredient ingredient = new Ingredient(
-                            rs.getInt("id"),
-                            rs.getString("name"),
-                            CategoryEnum.valueOf(rs.getString("category")),
-                            rs.getDouble("price")
-                    );
-                    DishIngredient di = new DishIngredient(
-                            ingredient,
-                            rs.getObject("required_quantity") == null ? null : rs.getDouble("required_quantity"),
-                            UnitEnum.valueOf(rs.getString("unit"))
-                    );
-                    list.add(di);
+                    ingredient.setId(rs.getInt("id"));
+                    ingredient.setName(rs.getString("name"));
+                    ingredient.setCategory( CategoryEnum.valueOf(rs.getString("category")));
+                    ingredient.setPrice(rs.getDouble("price"));
+
+                    dishIngredient.setIngredient(ingredient);
+                    dishIngredient.setQuantity(rs.getObject("required_quantity") == null ? null : rs.getDouble("required_quantity"),);
+                    dishIngredient.setUnit(UnitEnum.valueOf(rs.getString("unit")));
+
+                    list.add(dishIngredient);
                 }
             }
-
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
         return list;
     }
 
     public Dish updateDishIngredients(Integer dishId, List<Ingredient> requestedIngredients) {
-        // Resolve only existing ingredients from DB
+
         List<Ingredient> validIngredients = new ArrayList<>();
         for (Ingredient req : requestedIngredients) {
             Ingredient fromDb = ingredientRepository.getIngredientById(req.getId());

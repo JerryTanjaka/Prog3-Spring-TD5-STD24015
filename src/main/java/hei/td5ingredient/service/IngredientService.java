@@ -2,6 +2,7 @@ package hei.td5ingredient.service;
 
 
 
+import hei.td5ingredient.entity.Ingredient;
 import hei.td5ingredient.repository.IngredientRepository;
 import org.springframework.stereotype.Service;
 

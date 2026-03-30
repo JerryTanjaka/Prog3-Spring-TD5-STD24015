@@ -1,9 +1,7 @@
 package hei.td5ingredient.repository;
 
 import hei.td5ingredient.Enum.CategoryEnum;
-import hei.td5ingredient.Enum.MovementTypeEnum;
 import hei.td5ingredient.entity.Ingredient;
-import hei.td5ingredient.entity.StockMovement;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;

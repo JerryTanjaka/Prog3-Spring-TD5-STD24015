@@ -22,17 +22,20 @@ public class IngredientController {
     public IngredientController(IngredientService ingredientService){
         this.ingredientService= ingredientService;
     }
-    @GetMapping
-    public List<Ingredient> getAllIngredients() {
-        return ingredientService.getAllIngredients();
+    @GetMapping("/ingredients")
+    public ResponseEntity<List<Ingredient>> getIngredients() {
+        return ResponseEntity.ok(ingredientService.getIngredients());
     }
 
-    @GetMapping("/{id}")
-    public Ingredient getIngredientById(@PathVariable int id) {
-        return ingredientService.getIngredientById(id);
+    @GetMapping("/ingredients/{id}")
+    public ResponseEntity<?> getIngredientById(@PathVariable Integer id) {
+        Ingredient ingredient = ingredientService.getIngredientById(id);
+        if (ingredient == null) {
+            return ResponseEntity.status(404)
+                    .body("Ingredient.id=" + id + " is not found");
+        }
+        return ResponseEntity.ok(ingredient);
     }
-
-
 
     @GetMapping("/ingredients/{id}/stock")
     public ResponseEntity<?> getIngredientStock(
