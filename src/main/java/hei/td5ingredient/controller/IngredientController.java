@@ -1,7 +1,9 @@
 package hei.td5ingredient.controller;
 
 
+import hei.td5ingredient.Enum.UnitEnum;
 import hei.td5ingredient.entity.Ingredient;
+import hei.td5ingredient.entity.StockValue;
 import hei.td5ingredient.service.IngredientService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.Instant;
 import java.util.List;
 
 @RestController
@@ -30,15 +33,40 @@ public class IngredientController {
     }
 
 
-    @GetMapping("/{id}/stock")
-    public ResponseEntity<?> getStock(@PathVariable int id, @RequestParam(required = false) String at,
-                                      @RequestParam(required = false) String unit) {
+
+    @GetMapping("/ingredients/{id}/stock")
+    public ResponseEntity<?> getIngredientStock(
+            @PathVariable Integer id,
+            @RequestParam(required = false) String at,
+            @RequestParam(required = false) String unit) {
+
         if (at == null || unit == null) {
-            return ResponseEntity.status(400).body("Either mandatory query parameter `at` or `unit` is not provided.");
+            return ResponseEntity.status(400)
+                    .body("Either mandatory query parameter `at` or `unit` is not provided.");
         }
-        if (ingredientService.getIngredientById(id) == null) {
-            return ResponseEntity.status(404).body("Ingredient.id=" + id + " is not found");
+
+        Ingredient ingredient = ingredientService.getIngredientById(id);
+        if (ingredient == null) {
+            return ResponseEntity.status(404)
+                    .body("Ingredient.id=" + id + " is not found");
         }
-        return ResponseEntity.ok("Valeur du stock ici");
+
+        Instant atInstant;
+        UnitEnum unitEnum;
+        try {
+            atInstant = Instant.parse(at);
+        } catch (Exception e) {
+            return ResponseEntity.status(400)
+                    .body("Invalid value for `at` parameter. Expected ISO-8601 format (e.g. 2024-01-06T12:00:00Z).");
+        }
+        try {
+            unitEnum = UnitEnum.valueOf(unit.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(400)
+                    .body("Invalid value for `unit` parameter. Expected one of: PCS, KG, L.");
+        }
+
+        StockValue stockValue = ingredientService.getStockAt(id, atInstant, unitEnum);
+        return ResponseEntity.ok(stockValue);
     }
 }

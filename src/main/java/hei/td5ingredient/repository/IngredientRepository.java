@@ -1,11 +1,14 @@
 package hei.td5ingredient.repository;
 
 import hei.td5ingredient.Enum.CategoryEnum;
+import hei.td5ingredient.Enum.MovementTypeEnum;
 import hei.td5ingredient.entity.Ingredient;
+import hei.td5ingredient.entity.StockMovement;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.*;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +44,7 @@ public class IngredientRepository {
     }
 
     public Ingredient findById(int id) {
-        String sql = "SELECT * FROM ingredient WHERE id = ?";
+        String sql = "SELECT id FROM ingredient WHERE id = ?";
         Ingredient ingredient =null;
         try (Connection conn = dataSource.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {

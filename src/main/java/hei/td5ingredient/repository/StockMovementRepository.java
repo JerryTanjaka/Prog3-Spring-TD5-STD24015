@@ -1,47 +1,58 @@
 package hei.td5ingredient.repository;
-
-import hei.td5ingredient.Enum.MovementTypeEnum;
 import hei.td5ingredient.Enum.UnitEnum;
-import hei.td5ingredient.entity.StockMovement;
 import hei.td5ingredient.entity.StockValue;
 import org.springframework.stereotype.Repository;
+
 import javax.sql.DataSource;
 import java.sql.*;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
 
 @Repository
 public class StockMovementRepository {
+
     private final DataSource dataSource;
 
     public StockMovementRepository(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
-    public List<StockMovement> findByIngredientIdBefore(int ingredientId, Instant date) {
-        List<StockMovement> movements = new ArrayList<>();
-        String sql = "SELECT id, type, creation_datetime, quantity, unit " +
-                "FROM stock_movement WHERE id_ingredient = ? AND creation_datetime <= ?";
+    public StockValue getStockValueAt(Integer ingredientId, Instant at, UnitEnum unit) {
+        String sql = """
+                SELECT unit,
+                       SUM(
+                           CASE
+                               WHEN type = 'IN'  THEN  quantity
+                               WHEN type = 'OUT' THEN -quantity
+                               ELSE 0
+                           END
+                       ) AS actual_quantity
+                FROM stock_movement
+                WHERE creation_datetime <= ?
+                  AND id_ingredient = ?
+                  AND unit = ?::unit
+                GROUP BY unit
+                """;
 
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            pstmt.setInt(1, ingredientId);
-            pstmt.setTimestamp(2, Timestamp.from(date));
-            ResultSet rs = pstmt.executeQuery();
+            ps.setTimestamp(1, Timestamp.from(at));
+            ps.setInt(2, ingredientId);
+            ps.setString(3, unit.name());
 
-            while (rs.next()) {
-                StockMovement sm = new StockMovement();
-                sm.setId(rs.getInt("id"));
-                sm.setType(MovementTypeEnum.valueOf(rs.getString("type")));
-                sm.setCreationDatetime(rs.getTimestamp("creation_datetime").toInstant());
-                sm.setValue(new StockValue(rs.getDouble("quantity"), UnitEnum.valueOf(rs.getString("unit"))));
-                movements.add(sm);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new StockValue(
+                            rs.getDouble("actual_quantity"),
+                            UnitEnum.valueOf(rs.getString("unit"))
+                    );
+                }
+
+                return new StockValue(0.0, unit);
             }
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return movements;
     }
 }
