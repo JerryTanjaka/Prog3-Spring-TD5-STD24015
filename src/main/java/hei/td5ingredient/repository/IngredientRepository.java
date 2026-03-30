@@ -20,7 +20,7 @@ public class IngredientRepository {
     public List<Ingredient> findAll() {
         List<Ingredient> ingredients = new ArrayList<>();
         Ingredient ingredient = null;
-        String sql = "SELECT * FROM ingredient";
+        String sql = "SELECT id FROM ingredient";
 
         try (Connection conn = dataSource.getConnection();
              Statement stmt = conn.createStatement();
