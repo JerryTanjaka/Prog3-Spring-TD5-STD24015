@@ -1,50 +1,46 @@
-### Variables
-@host = http://localhost:8080
+### Get all ingredients
+GET localhost:8080/ingredients
 
-### 1. [POINT A] Récupérer la liste de tous les ingrédients
-# Attendu : Liste JSON des ingrédients (id, name, category, price)
-GET {{host}}/ingredients
-Accept: application/json
+### Get ingredient by ID
+GET localhost:8080/ingredients/1
 
-### 2. [POINT B] Récupérer un ingrédient par son ID (Succès)
-# Remplace '1' par un ID qui existe dans ta base
-GET {{host}}/ingredients/1
-Accept: application/json
+### Get stock value at specific time
+GET localhost:8080/ingredients/1/stock?at=2024-06-01T12:00:00Z&unit=KG
 
-### 2.bis [POINT B] Test d'erreur 404 (ID inexistant)
-# Attendu : Code 404 avec message "Ingredient.id=999 is not found"
-GET {{host}}/ingredients/999
-Accept: application/json
+### Get all dishes
+GET localhost:8080/dishes
 
-### 3. [POINT C] Récupérer la valeur du stock à une date précise
-# Note : La date doit être au format ISO (ex: 2024-01-06T12:00:00Z)
-GET {{host}}/ingredients/1/stock?at=2026-03-30T10:00:00Z&unit=KG
-Accept: application/json
 
-### 3.bis [POINT C] Test d'erreur 400 (Paramètre manquant)
-# Attendu : Code 400 avec message "Either mandatory query parameter `at` or `unit` is not provided."
-GET {{host}}/ingredients/1/stock?at=2024-01-06T12:00:00Z
-Accept: application/json
-
-### 4. [POINT D] Récupérer la liste de tous les plats
-# Attendu : Liste des plats avec leur liste d'ingrédients incluse
-GET {{host}}/dishes
-Accept: application/json
-
-### 5. [POINT E] Modifier (associer) les ingrédients d'un plat
-# On envoie une liste d'ingrédients (ici id 1 et 2) pour le plat id 1
-PUT {{host}}/dishes/1/ingredients
+### Associate ingredients to dish (replace all existing ingredients)
+PUT localhost:8080/dishes/1/ingredients
 Content-Type: application/json
 
 [
-  { "id": 1 },
-  { "id": 2 }
+  {
+    "ingredient": {
+      "id": 1000
+    },
+    "quantity_required": 2.5,
+    "unit": "KG"
+  },
+  {
+    "ingredient": {
+      "id": 3
+    },
+    "quantity_required": 1,
+    "unit": "PCS"
+  },
+  {
+    "ingredient": {
+      "id": 5
+    },
+    "quantity_required": 3,
+    "unit": "PCS"
+  }
 ]
 
-### 5.bis [POINT E] Test d'erreur 404 pour un plat inexistant
-PUT {{host}}/dishes/999/ingredients
+### Dissociate all ingredients from dish (empty list)
+PUT localhost:8080/dishes/1/ingredients
 Content-Type: application/json
 
-[
-  { "id": 1 }
-]
+[]

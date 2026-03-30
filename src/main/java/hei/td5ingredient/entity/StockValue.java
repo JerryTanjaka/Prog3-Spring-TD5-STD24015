@@ -1,6 +1,6 @@
 package hei.td5ingredient.entity;
 
-import hei.td5ingredient.Enum.UnitEnum;
+import hei.td5ingredient.entity.Enum.UnitEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

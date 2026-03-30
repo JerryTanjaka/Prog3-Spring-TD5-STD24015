@@ -1,5 +1,5 @@
 package hei.td5ingredient.repository;
-import hei.td5ingredient.Enum.UnitEnum;
+import hei.td5ingredient.entity.Enum.UnitEnum;
 import hei.td5ingredient.entity.StockValue;
 import org.springframework.stereotype.Repository;
 

@@ -1,8 +1,8 @@
 package hei.td5ingredient.repository;
 
-import hei.td5ingredient.Enum.CategoryEnum;
-import hei.td5ingredient.Enum.DishTypeEnum;
-import hei.td5ingredient.Enum.UnitEnum;
+import hei.td5ingredient.entity.Enum.CategoryEnum;
+import hei.td5ingredient.entity.Enum.DishTypeEnum;
+import hei.td5ingredient.entity.Enum.UnitEnum;
 import hei.td5ingredient.entity.Dish;
 import hei.td5ingredient.entity.DishIngredient;
 import hei.td5ingredient.entity.Ingredient;
@@ -62,7 +62,7 @@ public class DishRepository {
                     dish.setId(rs.getInt("id"));
                     dish.setDishIngredients(getIngredientsByDishId(id));
                     dish.setName(rs.getString("name"));
-                    dish.setSellingPrice(rs.getObject("selling_price") == null ? null : rs.getDouble("selling_price"),);
+                    dish.setSellingPrice(rs.getObject("selling_price") == null ? null : rs.getDouble("selling_price"));
                     dish.setDishType(DishTypeEnum.valueOf(rs.getString("dish_type")));
                 }
                 return dish;
@@ -96,7 +96,7 @@ public class DishRepository {
                     ingredient.setPrice(rs.getDouble("price"));
 
                     dishIngredient.setIngredient(ingredient);
-                    dishIngredient.setQuantity(rs.getObject("required_quantity") == null ? null : rs.getDouble("required_quantity"),);
+                    dishIngredient.setQuantity(rs.getObject("required_quantity") == null ? null : rs.getDouble("required_quantity"));
                     dishIngredient.setUnit(UnitEnum.valueOf(rs.getString("unit")));
 
                     list.add(dishIngredient);
@@ -112,7 +112,7 @@ public class DishRepository {
 
         List<Ingredient> validIngredients = new ArrayList<>();
         for (Ingredient req : requestedIngredients) {
-            Ingredient fromDb = ingredientRepository.getIngredientById(req.getId());
+            Ingredient fromDb = ingredientRepository.findIngredientById(req.getId());
             if (fromDb != null) {
                 validIngredients.add(fromDb);
             }

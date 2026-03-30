@@ -1,7 +1,7 @@
 package hei.td5ingredient.controller;
 
 
-import hei.td5ingredient.Enum.UnitEnum;
+import hei.td5ingredient.entity.Enum.UnitEnum;
 import hei.td5ingredient.entity.Ingredient;
 import hei.td5ingredient.entity.StockValue;
 import hei.td5ingredient.service.IngredientService;
@@ -22,12 +22,12 @@ public class IngredientController {
     public IngredientController(IngredientService ingredientService){
         this.ingredientService= ingredientService;
     }
-    @GetMapping("/ingredients")
+    @GetMapping()
     public ResponseEntity<List<Ingredient>> getIngredients() {
         return ResponseEntity.ok(ingredientService.getIngredients());
     }
 
-    @GetMapping("/ingredients/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<?> getIngredientById(@PathVariable Integer id) {
         Ingredient ingredient = ingredientService.getIngredientById(id);
         if (ingredient == null) {
@@ -37,7 +37,7 @@ public class IngredientController {
         return ResponseEntity.ok(ingredient);
     }
 
-    @GetMapping("/ingredients/{id}/stock")
+    @GetMapping("/{id}/stock")
     public ResponseEntity<?> getIngredientStock(
             @PathVariable Integer id,
             @RequestParam(required = false) String at,
