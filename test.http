@@ -34,7 +34,7 @@ Content-Type: application/json
     "ingredient": {
       "id": 5
     },
-    "quantity_required": 3,
+    "quantity_required": 30,
     "unit": "PCS"
   }
 ]

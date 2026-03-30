@@ -38,7 +38,7 @@ public class IngredientController {
     }
 
     @GetMapping("/{id}/stock")
-    public ResponseEntity<?> getIngredientStock(
+    public ResponseEntity<?> getIngredientStockAt(
             @PathVariable Integer id,
             @RequestParam(required = false) String at,
             @RequestParam(required = false) String unit) {
@@ -70,6 +70,7 @@ public class IngredientController {
         }
 
         StockValue stockValue = ingredientService.getStockAt(id, atInstant, unitEnum);
-        return ResponseEntity.ok(stockValue);
+        return ResponseEntity.ok(stockValue)
+        ;
     }
 }

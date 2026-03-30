@@ -1,7 +1,9 @@
 package hei.td5ingredient.controller;
 
 import hei.td5ingredient.entity.Dish;
+import hei.td5ingredient.entity.DishIngredient;
 import hei.td5ingredient.entity.Ingredient;
+import hei.td5ingredient.repository.DishRepository;
 import hei.td5ingredient.service.DishService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,22 +26,14 @@ public class DishController {
     }
 
     @PutMapping("/{id}/ingredients")
-    public ResponseEntity<?> updateDishIngredients(
-            @PathVariable Integer id,
-            @RequestBody(required = false) List<Ingredient> ingredients) {
+    public ResponseEntity<?> update(@PathVariable int id, @RequestBody List<DishIngredient> incomingItems) {
 
-        if (ingredients == null) {
-            return ResponseEntity.status(400)
-                    .body("Request body is required and must contain a list of ingredients.");
+        if (dishService.getDishById(id) == null) {
+            return ResponseEntity.status(404).body("Dish.id=" + id + " is not found");
         }
 
-        Dish dish = dishService.getDishById(id);
-        if (dish == null) {
-            return ResponseEntity.status(404)
-                    .body("Dish.id=" + id + " is not found");
-        }
+        Dish updatedDish = dishService.updateDishIngredients(id, incomingItems);
 
-        Dish updated = dishService.updateDishIngredients(id, ingredients);
-        return ResponseEntity.ok(updated);
+        return ResponseEntity.ok(updatedDish);
     }
 }

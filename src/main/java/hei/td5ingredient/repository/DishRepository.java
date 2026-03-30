@@ -17,11 +17,9 @@ import java.util.List;
 public class DishRepository {
 
     private final DataSource dataSource;
-    private final IngredientRepository ingredientRepository;
 
-    public DishRepository(DataSource dataSource, IngredientRepository ingredientRepository) {
+    public DishRepository(DataSource dataSource) {
         this.dataSource = dataSource;
-        this.ingredientRepository = ingredientRepository;
     }
 
     public List<Dish> getDishes() {
@@ -32,20 +30,19 @@ public class DishRepository {
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
-            Dish dish = new Dish();
             while (rs.next()) {
-                dish.setName(rs.getString("name"));
+                Dish dish = new Dish();
                 dish.setId(rs.getInt("id"));
+                dish.setName(rs.getString("name"));
                 dish.setSellingPrice(rs.getObject("selling_price") == null ? null : rs.getDouble("selling_price"));
                 dish.setDishType(DishTypeEnum.valueOf(rs.getString("dish_type")));
+
                 dish.setDishIngredients(getIngredientsByDishId(dish.getId()));
                 dishes.add(dish);
             }
-
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Erreur lors de la récupération des plats", e);
         }
-
         return dishes;
     }
 
@@ -57,20 +54,20 @@ public class DishRepository {
 
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
-                Dish dish = new Dish();
                 if (rs.next()) {
+                    Dish dish = new Dish();
                     dish.setId(rs.getInt("id"));
-                    dish.setDishIngredients(getIngredientsByDishId(id));
                     dish.setName(rs.getString("name"));
                     dish.setSellingPrice(rs.getObject("selling_price") == null ? null : rs.getDouble("selling_price"));
                     dish.setDishType(DishTypeEnum.valueOf(rs.getString("dish_type")));
+                    dish.setDishIngredients(getIngredientsByDishId(id));
+                    return dish;
                 }
-                return dish;
             }
-
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Erreur lors de la récupération du plat id=" + id, e);
         }
+        return null;
     }
 
     private List<DishIngredient> getIngredientsByDishId(Integer dishId) {
@@ -87,14 +84,14 @@ public class DishRepository {
 
             ps.setInt(1, dishId);
             try (ResultSet rs = ps.executeQuery()) {
-                Ingredient ingredient = new Ingredient();
-                DishIngredient dishIngredient = new DishIngredient();
                 while (rs.next()) {
+                    Ingredient ingredient = new Ingredient();
                     ingredient.setId(rs.getInt("id"));
                     ingredient.setName(rs.getString("name"));
-                    ingredient.setCategory( CategoryEnum.valueOf(rs.getString("category")));
+                    ingredient.setCategory(CategoryEnum.valueOf(rs.getString("category")));
                     ingredient.setPrice(rs.getDouble("price"));
 
+                    DishIngredient dishIngredient = new DishIngredient();
                     dishIngredient.setIngredient(ingredient);
                     dishIngredient.setQuantity(rs.getObject("required_quantity") == null ? null : rs.getDouble("required_quantity"));
                     dishIngredient.setUnit(UnitEnum.valueOf(rs.getString("unit")));
@@ -108,40 +105,36 @@ public class DishRepository {
         return list;
     }
 
-    public Dish updateDishIngredients(Integer dishId, List<Ingredient> requestedIngredients) {
-
-        List<Ingredient> validIngredients = new ArrayList<>();
-        for (Ingredient req : requestedIngredients) {
-            Ingredient fromDb = ingredientRepository.findIngredientById(req.getId());
-            if (fromDb != null) {
-                validIngredients.add(fromDb);
-            }
-        }
+    public void updateDishIngredients(int dishId, List<DishIngredient> items) {
+        String deleteSql = "DELETE FROM dish_ingredient WHERE id_dish = ?";
+        String insertSql = "INSERT INTO dish_ingredient (id_dish, id_ingredient, required_quantity, unit) VALUES (?, ?, ?, ?::unit)";
 
         try (Connection conn = dataSource.getConnection()) {
             conn.setAutoCommit(false);
 
-            try (PreparedStatement del = conn.prepareStatement(
-                    "DELETE FROM dish_ingredient WHERE id_dish = ?")) {
-                del.setInt(1, dishId);
-                del.executeUpdate();
+            try (PreparedStatement psDel = conn.prepareStatement(deleteSql)) {
+                psDel.setInt(1, dishId);
+                psDel.executeUpdate();
             }
 
-            String insertSql = "INSERT INTO dish_ingredient (id_dish, id_ingredient) VALUES (?, ?)";
-            try (PreparedStatement ins = conn.prepareStatement(insertSql)) {
-                for (Ingredient ing : validIngredients) {
-                    ins.setInt(1, dishId);
-                    ins.setInt(2, ing.getId());
-                    ins.addBatch();
+            try (PreparedStatement psIns = conn.prepareStatement(insertSql)) {
+                for (DishIngredient item : items) {
+                    if (item.getQuantity() == null || item.getUnit() == null) {
+                        continue;
+                    }
+
+                    psIns.setInt(1, dishId);
+                    psIns.setInt(2, item.getIngredient().getId());
+                    psIns.setDouble(3, item.getQuantity());
+                    psIns.setString(4, item.getUnit().name());
+                    psIns.addBatch();
                 }
-                ins.executeBatch();
+                psIns.executeBatch();
             }
 
             conn.commit();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Erreur SQL lors du PUT /dishes : " + e.getMessage(), e);
         }
-
-        return getDishById(dishId);
     }
 }
