@@ -18,7 +18,7 @@ public class IngredientRepository {
         this.dataSource = dataSource;
     }
 
-    public List<Ingredient> findAll() {
+    public List<Ingredient> findAllIngredients() {
         List<Ingredient> ingredients = new ArrayList<>();
         Ingredient ingredient = null;
         String sql = "SELECT id FROM ingredient";
@@ -41,7 +41,7 @@ public class IngredientRepository {
         return ingredients;
     }
 
-    public Ingredient findById(int id) {
+    public Ingredient findIngredientById(int id) {
         String sql = "SELECT id FROM ingredient WHERE id = ?";
         Ingredient ingredient =null;
         try (Connection conn = dataSource.getConnection();
