@@ -2,7 +2,8 @@
 GET localhost:8080/ingredients
 
 ### Get ingredient by ID
-GET localhost:8080/ingredients/1
+GET localhost:8080/ingredients/6
+
 
 ### Get stock value at specific time
 GET localhost:8080/ingredients/1/stock?at=2024-06-01T12:00:00Z&unit=KG

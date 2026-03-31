@@ -28,13 +28,8 @@ public class IngredientController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getIngredientById(@PathVariable Integer id) {
-        Ingredient ingredient = ingredientService.getIngredientById(id);
-        if (ingredient == null) {
-            return ResponseEntity.status(404)
-                    .body("Ingredient.id=" + id + " is not found");
-        }
-        return ResponseEntity.ok(ingredient);
+    public Ingredient getIngredientById(@PathVariable int id) {
+        return ingredientService.getIngredientById(id);
     }
 
     @GetMapping("/{id}/stock")
