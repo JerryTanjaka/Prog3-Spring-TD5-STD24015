@@ -51,7 +51,7 @@ GET http://localhost:8080/ingredients/1/stockMovements?from=2024-01-01T00:00:00Z
 
 
 ### g) POST Movements (Ajout de nouveaux flux)
-POST http://localhost:8080/ingredients/3/stockMovements
+POST http://localhost:8080/ingredients/1/stockMovements
 Content-Type: application/json
 
 [
@@ -72,17 +72,15 @@ Content-Type: application/json
 ]
 ### gs) POST Movements (Ajout de nouveaux flux)
 
-POST http://localhost:8080/ingredients/3/stockMovements
+POST http://localhost:8080/ingredients/1/stockMovements
 Content-Type: application/json
 
-[
+
   {
     "type": "IN",
-    "value": {
-      "quantity": 10.0,
-      "unit": "KG"
-    }
+    "quantity": 10.0,
+     "unit": "KG"
   }
-]
+
 ### Test Erreur 404 (ID inexistant)
 GET http://localhost:8080/ingredients/9999/stockMovements?from=2024-01-01T00:00:00Z&to=2026-12-31T23:59:59Z
