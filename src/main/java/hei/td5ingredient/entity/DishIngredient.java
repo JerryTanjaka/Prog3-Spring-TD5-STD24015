@@ -2,7 +2,7 @@ package hei.td5ingredient.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import hei.td5ingredient.entity.Enum.UnitEnum;
+import hei.td5ingredient.entity.enums.UnitEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

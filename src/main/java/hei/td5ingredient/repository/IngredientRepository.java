@@ -1,6 +1,6 @@
 package hei.td5ingredient.repository;
 
-import hei.td5ingredient.entity.Enum.CategoryEnum;
+import hei.td5ingredient.entity.enums.CategoryEnum;
 import hei.td5ingredient.entity.Ingredient;
 import org.springframework.stereotype.Repository;
 

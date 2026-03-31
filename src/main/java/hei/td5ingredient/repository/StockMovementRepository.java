@@ -1,6 +1,6 @@
 package hei.td5ingredient.repository;
-import hei.td5ingredient.entity.Enum.MovementTypeEnum;
-import hei.td5ingredient.entity.Enum.UnitEnum;
+import hei.td5ingredient.entity.enums.MovementTypeEnum;
+import hei.td5ingredient.entity.enums.UnitEnum;
 import hei.td5ingredient.entity.StockMovement;
 import hei.td5ingredient.entity.StockValue;
 import org.springframework.stereotype.Repository;
@@ -87,32 +87,37 @@ public class StockMovementRepository {
         return list;
     }
 
-
     public List<StockMovement> saveAll(int ingredientId, List<StockMovement> movements) {
         String sql = "INSERT INTO stock_movement (id_ingredient, quantity, unit, type, creation_datetime) " +
-                "VALUES (?, ?, ?, ?, ?) RETURNING id, creation_datetime";
+                "VALUES (?, ?, ?::unit, ?::movement_type, ?) RETURNING id, creation_datetime";
 
         try (Connection conn = dataSource.getConnection()) {
             for (StockMovement sm : movements) {
                 try (PreparedStatement ps = conn.prepareStatement(sql)) {
                     ps.setInt(1, ingredientId);
+
+
                     ps.setDouble(2, sm.getValue().getAmount());
+
                     ps.setString(3, sm.getValue().getUnit().name());
                     ps.setString(4, sm.getType().name());
+
 
                     Instant now = Instant.now();
                     ps.setTimestamp(5, Timestamp.from(now));
 
-                    ResultSet rs = ps.executeQuery();
-                    if (rs.next()) {
-                        sm.setId(rs.getInt("id"));
-                        sm.setCreationDatetime(rs.getTimestamp("creation_datetime").toInstant());
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (rs.next()) {
+
+                            sm.setId(rs.getInt("id"));
+                            sm.setCreationDatetime(rs.getTimestamp("creation_datetime").toInstant());
+                        }
                     }
                 }
             }
             return movements;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Erreur SQL lors de l'insertion du mouvement : " + e.getMessage(), e);
         }
     }
 }

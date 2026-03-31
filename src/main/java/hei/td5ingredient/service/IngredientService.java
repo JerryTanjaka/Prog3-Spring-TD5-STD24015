@@ -2,7 +2,7 @@ package hei.td5ingredient.service;
 
 
 
-import hei.td5ingredient.entity.Enum.UnitEnum;
+import hei.td5ingredient.entity.enums.UnitEnum;
 import hei.td5ingredient.entity.Ingredient;
 import hei.td5ingredient.entity.StockMovement;
 import hei.td5ingredient.entity.StockValue;

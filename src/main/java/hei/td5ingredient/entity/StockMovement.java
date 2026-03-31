@@ -1,10 +1,8 @@
 package hei.td5ingredient.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import hei.td5ingredient.entity.Enum.MovementTypeEnum;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import hei.td5ingredient.entity.enums.MovementTypeEnum;
+import lombok.*;
 import java.time.Instant;
 
 @Data
@@ -18,5 +16,7 @@ public class StockMovement {
     private Instant creationDatetime;
 
     private StockValue value;
-    private int ingredientId;
+
+    @JsonProperty("ingredient_id")
+    private Integer ingredientId;
 }

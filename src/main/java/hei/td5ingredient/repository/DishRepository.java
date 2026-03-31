@@ -1,8 +1,8 @@
 package hei.td5ingredient.repository;
 
-import hei.td5ingredient.entity.Enum.CategoryEnum;
-import hei.td5ingredient.entity.Enum.DishTypeEnum;
-import hei.td5ingredient.entity.Enum.UnitEnum;
+import hei.td5ingredient.entity.enums.CategoryEnum;
+import hei.td5ingredient.entity.enums.DishTypeEnum;
+import hei.td5ingredient.entity.enums.UnitEnum;
 import hei.td5ingredient.entity.Dish;
 import hei.td5ingredient.entity.DishIngredient;
 import hei.td5ingredient.entity.Ingredient;
