@@ -72,21 +72,4 @@ public class IngredientController {
         ;
     }
 
-
-    // Stock Movements
-    @GetMapping("/{id}/stockMovements")
-    public List<StockMovement> getStockMovements(
-            @PathVariable int id,
-            @RequestParam Instant from,
-            @RequestParam Instant to) {
-        return ingredientService.getMovements(id, from, to);
-    }
-
-    @PostMapping("/{id}/stockMovements")
-    public List<StockMovement> postStockMovements(
-            @PathVariable int id,
-            @RequestBody List<StockMovement> movements) {
-        return ingredientService.addMovements(id, movements);
-    }
-
 }

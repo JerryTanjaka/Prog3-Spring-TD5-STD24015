@@ -45,3 +45,24 @@ PUT localhost:8080/dishes/1/ingredients
 Content-Type: application/json
 
 []
+
+### f) GET Movements avec filtre (Remplace l'ID 1 par un ID existant)
+GET http://localhost:8080/ingredients/1/stockMovements?from=2024-01-01T00:00:00Z&to=2026-12-31T23:59:59Z
+
+### g) POST Movements (Ajout de nouveaux flux)
+POST http://localhost:8080/ingredients/1/stockMovements
+Content-Type: application/json
+
+[
+  {
+    "type": "IN",
+    "value": { "quantity": 50.0, "unit": "KG" }
+  },
+  {
+    "type": "OUT",
+    "value": { "quantity": 10.0, "unit": "KG" }
+  }
+]
+
+### Test Erreur 404 (ID inexistant)
+GET http://localhost:8080/ingredients/9999/stockMovements?from=2024-01-01T00:00:00Z&to=2026-12-31T23:59:59Z
