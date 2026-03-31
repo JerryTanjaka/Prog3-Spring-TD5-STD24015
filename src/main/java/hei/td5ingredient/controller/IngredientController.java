@@ -3,11 +3,14 @@ package hei.td5ingredient.controller;
 
 import hei.td5ingredient.entity.Enum.UnitEnum;
 import hei.td5ingredient.entity.Ingredient;
+import hei.td5ingredient.entity.StockMovement;
 import hei.td5ingredient.entity.StockValue;
 import hei.td5ingredient.service.IngredientService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -68,4 +71,22 @@ public class IngredientController {
         return ResponseEntity.ok(stockValue)
         ;
     }
+
+
+    // Stock Movements
+    @GetMapping("/{id}/stockMovements")
+    public List<StockMovement> getStockMovements(
+            @PathVariable int id,
+            @RequestParam Instant from,
+            @RequestParam Instant to) {
+        return ingredientService.getMovements(id, from, to);
+    }
+
+    @PostMapping("/{id}/stockMovements")
+    public List<StockMovement> postStockMovements(
+            @PathVariable int id,
+            @RequestBody List<StockMovement> movements) {
+        return ingredientService.addMovements(id, movements);
+    }
+
 }
