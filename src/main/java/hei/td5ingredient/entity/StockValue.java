@@ -5,8 +5,8 @@ import hei.td5ingredient.entity.enums.UnitEnum;
 import lombok.*;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class StockValue {
 
     @JsonProperty("quantity")
