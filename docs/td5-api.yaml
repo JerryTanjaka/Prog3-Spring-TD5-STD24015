@@ -4,7 +4,7 @@ info:
   description: Manage ingredients and dishes for the TD5 (SRP) exercise — simple REST endpoints to inspect and update stored data.
   version: 1.0.0
 servers:
-  - url: http://localhost:8000
+  - url: http://localhost:8080
     description: Local development server
 tags:
   - name: Ingredients
